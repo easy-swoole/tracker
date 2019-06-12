@@ -6,6 +6,8 @@ namespace EasySwoole\Tracker\Shell;
 
 use EasySwoole\Tracker\Shell\Response\Bandwidth;
 use EasySwoole\Tracker\Shell\Response\CpuIntensiveProcesses;
+use EasySwoole\Tracker\Shell\Response\CurrentRam;
+use EasySwoole\Tracker\Shell\Response\DiskPartition;
 use Swoole\Coroutine;
 
 class Shell
@@ -36,7 +38,23 @@ class Shell
     public static function cpuTemp()
     {
         $json = self::exec('cpuTemp.sh');
-        var_dump($json);
+        return $json;
+    }
+
+    public static function diskPartitions()
+    {
+        $json = self::exec('diskPartitions.sh');
+        $ret = [];
+        foreach ($json as $item){
+            $ret[] = new DiskPartition($item);
+        }
+        return $ret;
+    }
+
+    public static function currentRam()
+    {
+        $info = self::exec('currentRam.sh');
+        return new CurrentRam($info);
     }
 
 
