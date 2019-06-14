@@ -6,9 +6,9 @@ namespace EasySwoole\Tracker;
 
 class Point
 {
-    const END_SUCCESS = 'SUCCESS';
-    const END_FAIL = 'FAIL';
-    const END_UNKNOWN = 'UNKNOWN';
+    const END_SUCCESS = 'success';
+    const END_FAIL = 'fail';
+    const END_UNKNOWN = 'unknown';
     protected $startTime;
     protected $startArg;
     protected $endTime;
@@ -24,7 +24,7 @@ class Point
         $this->startTime = round(microtime(true),4);
     }
 
-    function end(?string $status = self::END_SUCCESS,$arg = null)
+    function end(string $status = self::END_SUCCESS,$arg = null)
     {
         if($this->endStatus != self::END_UNKNOWN){
            return;

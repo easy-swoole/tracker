@@ -44,19 +44,25 @@ class Tracker
 
     function __toString()
     {
-        $msg = "Tracker Stack:\n";
-        $msg .="\tTrackerId:{$this->trackerId}\n";
-        $msg .= "\tAttributes:\n";
-        foreach ($this->attributes as $key => $attribute){
-            $msg .= "\t\t{$key}:{$attribute}\n";
+        try{
+            $msg = "Tracker Stack:\n";
+            $msg .="\tTrackerId:{$this->trackerId}\n";
+            $msg .= "\tAttributes:\n";
+            foreach ($this->attributes as $key => $attribute){
+                $msg .= "\t\t{$key}:{$attribute}\n";
+            }
+            $msg .= "\tPoints:\n";
+            /** @var Point $point */
+            foreach ($this->pointList as $point){
+                $msg .= "\t\tname:{$point->getPointName()}\n";
+                $msg .= "\t\tstatus:{$point->getEndStatus()}\n";
+                $msg .= "\t\tstartTime:{$point->getStartTime()}\n";
+                $msg .= "\t\tendTime:{$point->getEndTime()}\n";
+            }
+            return $msg;
+        }catch (\Throwable $throwable){
+            var_dump($throwable->getMessage());
+            return '';
         }
-        $msg .= "\tPoints:\n";
-        /** @var Point $point */
-        foreach ($this->pointList as $point){
-            $msg .= "\t\tname:{$point->getPointName()}\n";
-            $msg .= "\t\tstartTime:{$point->getStartTime()}\n";
-            $msg .= "\t\tendTime:{$point->getEndTime()}\n";
-        }
-        return $msg;
     }
 }
