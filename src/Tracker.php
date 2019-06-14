@@ -49,7 +49,7 @@ class Tracker
             $msg .="\tTrackerId:{$this->trackerId}\n";
             $msg .= "\tAttributes:\n";
             foreach ($this->attributes as $key => $attribute){
-                $msg .= "\t\t{$key}:{$attribute}\n";
+                $msg .= "\t\t{$key}:{$this->argToString($attribute)}\n";
             }
             $msg .= "\tPoints:\n";
             /** @var Point $point */
