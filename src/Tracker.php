@@ -54,15 +54,29 @@ class Tracker
             $msg .= "\tPoints:\n";
             /** @var Point $point */
             foreach ($this->pointList as $point){
+                $msg .= "\t\t#\n";
                 $msg .= "\t\tname:{$point->getPointName()}\n";
                 $msg .= "\t\tstatus:{$point->getEndStatus()}\n";
+                $msg .= "\t\tfile:{$point->getFile()} line:{$point->getLine()}\n";
                 $msg .= "\t\tstartTime:{$point->getStartTime()}\n";
+                $msg .= "\t\tstartArg:{$this->argToString($point->getStartArg())}\n";
                 $msg .= "\t\tendTime:{$point->getEndTime()}\n";
+                $msg .= "\t\tendArg:{$this->argToString($point->getEndArg())}\n";
             }
             return $msg;
         }catch (\Throwable $throwable){
-            var_dump($throwable->getMessage());
-            return '';
+            return $throwable->getMessage();
+        }
+    }
+
+    private function argToString($arg)
+    {
+        if($arg == null){
+            return 'null';
+        }else if(is_array($arg)){
+            return json_encode($arg,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        }else{
+            return (string)$arg;
         }
     }
 }

@@ -13,7 +13,8 @@ class Point
     protected $startArg;
     protected $endTime;
     protected $pointName;
-    protected $trace;
+    protected $file;
+    protected $line;
     protected $endStatus = self::END_UNKNOWN;
     protected $endArg;
 
@@ -22,6 +23,11 @@ class Point
         $this->startArg = $arg;
         $this->pointName = $pointName;
         $this->startTime = round(microtime(true),4);
+        $debugTrace = debug_backtrace();
+        array_shift($debugTrace);
+        $caller = array_shift($debugTrace);
+        $this->file = $caller['file'];
+        $this->line = $caller['line'];
     }
 
     function end(string $status = self::END_SUCCESS,$arg = null)
@@ -144,5 +150,37 @@ class Point
     public function setEndArg($endArg): void
     {
         $this->endArg = $endArg;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @param mixed $file
+     */
+    public function setFile($file): void
+    {
+        $this->file = $file;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLine()
+    {
+        return $this->line;
+    }
+
+    /**
+     * @param mixed $line
+     */
+    public function setLine($line): void
+    {
+        $this->line = $line;
     }
 }
