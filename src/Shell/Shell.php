@@ -16,7 +16,13 @@ use EasySwoole\Tracker\Shell\Response\IoStats;
 use EasySwoole\Tracker\Shell\Response\IpAddresses;
 use EasySwoole\Tracker\Shell\Response\LoadAvg;
 use EasySwoole\Tracker\Shell\Response\LoggedInUsers;
+use EasySwoole\Tracker\Shell\Response\NetworkConnections;
 use EasySwoole\Tracker\Shell\Response\Ping;
+use EasySwoole\Tracker\Shell\Response\Pm2Stats;
+use EasySwoole\Tracker\Shell\Response\RamIntensiveProcesses;
+use EasySwoole\Tracker\Shell\Response\ScheduledCrons;
+use EasySwoole\Tracker\Shell\Response\Swap;
+use EasySwoole\Tracker\Shell\Response\UserAccounts;
 use Swoole\Coroutine;
 
 class Shell
