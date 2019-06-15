@@ -22,7 +22,7 @@ use EasySwoole\Tracker\Shell\Response\Pm2Stats;
 use EasySwoole\Tracker\Shell\Response\RamIntensiveProcesses;
 use EasySwoole\Tracker\Shell\Response\ScheduledCrons;
 use EasySwoole\Tracker\Shell\Response\Swap;
-use EasySwoole\Tracker\Shell\Response\UserAccounts;
+use EasySwoole\Tracker\Shell\Response\CurrentUserAccounts;
 use Swoole\Coroutine;
 
 class Shell
@@ -221,7 +221,7 @@ class Shell
     public static function userAccounts()
     {
         $info = self::exec('userAccounts.sh');
-        return new UserAccounts($info);
+        return new CurrentUserAccounts($info);
     }
 
     private static function exec($file):array
