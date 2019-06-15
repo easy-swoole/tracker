@@ -6,7 +6,7 @@ namespace EasySwoole\Tracker\Shell\Response;
 
 use EasySwoole\Spl\SplBean;
 
-class CurrentUserAccounts extends SplBean
+class UserAccount extends SplBean
 {
     protected $type;
     protected $user;
