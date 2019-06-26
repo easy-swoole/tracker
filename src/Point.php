@@ -70,6 +70,7 @@ class Point
     function appendChileInstance(Point $point)
     {
         $this->subPoints[] = $point;
+        return $this;
     }
 
     function findChild(string $pointId):?Point
