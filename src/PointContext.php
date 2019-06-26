@@ -7,14 +7,14 @@ namespace EasySwoole\Tracker;
 use EasySwoole\Component\Singleton;
 use Swoole\Coroutine;
 
-class TrackerContext
+class PointContext
 {
     use Singleton;
 
     protected $deferList = [];
     protected $tracker = [];
 
-    public function __init($cid = null):Tracker
+    public function __init(string $name,$cid = null):Point
     {
         if($cid === null){
             $cid = Coroutine::getUid();
@@ -27,13 +27,13 @@ class TrackerContext
             }
         }
         if(!isset($this->tracker[$cid])){
-            $this->tracker[$cid] = new Tracker();
+            $this->tracker[$cid] = new Point($name);
         }
         return $this->tracker[$cid];
     }
 
-    public static function getTracker(?int $cid = null):Tracker
+    public static function getPoint(string $name = 'UNKNOWN', ?int $cid = null):Point
     {
-        return TrackerContext::getInstance()->__init($cid);
+        return PointContext::getInstance()->__init($name,$cid);
     }
 }

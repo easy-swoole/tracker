@@ -35,22 +35,22 @@ foreach ($list as $item){
 
 ## 追踪器的使用
 ```
-use EasySwoole\Tracker\TrackerContext;
-
-$point = TrackerContext::getTracker()->addPoint('func1',[
-    'arg1'=>'arg1',
-    'arg2'=>'arg2'
+$point = new \EasySwoole\Tracker\Point('p1');
+$point->setStartArg([
+    'p1Arg' => 'p1Arg'
 ]);
+$sub1 = $point->appendChild('p1->1');
+$sub1->setStartArg([
+    'p1->1'=>'p1->1Arg'
+]);
+$sub1->end($sub1::END_FAIL);
 
-//do func1
-sleep(1);
+$sub2 = $point->appendChild('p1->2');
+$sub2->end();
+
+$point2 = $point->next('p2');
+$point2->end();
 $point->end();
 
-$point2 = TrackerContext::getTracker()->addPoint('func2');
-
-$point2->end($point::END_FAIL,[
-    'result'=>'xxxx'
-]);
-
-echo TrackerContext::getTracker();
+echo \EasySwoole\Tracker\Point::toString($point);
 ```
