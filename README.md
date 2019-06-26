@@ -54,3 +54,5 @@ $point->end();
 
 echo \EasySwoole\Tracker\Point::toString($point);
 ```
+
+> 协程中可以用 PointContext 来管理创建主节点
