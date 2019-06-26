@@ -19,6 +19,14 @@ class Tracker
         }
     }
 
+    function trackerId(?string $trackerId = null):string
+    {
+        if($trackerId){
+            $this->trackerId = $trackerId;
+        }
+        return $this->trackerId;
+    }
+
     public function addPoint(string $pointName,$arg = null):Point
     {
         $point = new Point($pointName,$arg);
@@ -57,7 +65,7 @@ class Tracker
                 $msg .= "\t\t#\n";
                 $msg .= "\t\tname:{$point->getPointName()}\n";
                 $msg .= "\t\tstatus:{$point->getEndStatus()}\n";
-                $msg .= "\t\tfile:{$point->getFile()} line:{$point->getLine()}\n";
+                $msg .= "\t\tpoint:{$point->getFile()} line:{$point->getLine()}\n";
                 $msg .= "\t\tstartTime:{$point->getStartTime()}\n";
                 $msg .= "\t\tstartArg:{$this->argToString($point->getStartArg())}\n";
                 $msg .= "\t\tendTime:{$point->getEndTime()}\n";

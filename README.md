@@ -35,11 +35,22 @@ foreach ($list as $item){
 
 ## 追踪器的使用
 ```
-$tracker = new \EasySwoole\Tracker\Tracker();
-$point = $tracker->addPoint('func1','call arg');
+use EasySwoole\Tracker\TrackerContext;
+
+$point = TrackerContext::getTracker()->addPoint('func1',[
+    'arg1'=>'arg1',
+    'arg2'=>'arg2'
+]);
+
 //do func1
+sleep(1);
 $point->end();
 
-echo $tracker;
+$point2 = TrackerContext::getTracker()->addPoint('func2');
+
+$point2->end($point::END_FAIL,[
+    'result'=>'xxxx'
+]);
+
+echo TrackerContext::getTracker();
 ```
-> 可以利用Context管理器，实现任意位置获取当前请求的tracker ,然后任意添加追踪点。

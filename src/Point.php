@@ -4,6 +4,8 @@
 namespace EasySwoole\Tracker;
 
 
+use EasySwoole\Utility\Random;
+
 class Point
 {
     const END_SUCCESS = 'success';
@@ -17,6 +19,7 @@ class Point
     protected $line;
     protected $endStatus = self::END_UNKNOWN;
     protected $endArg;
+    protected $pointId;
 
     function __construct(string $pointName,$arg)
     {
@@ -28,6 +31,15 @@ class Point
         $caller = array_shift($debugTrace);
         $this->file = $caller['file'];
         $this->line = $caller['line'];
+        $this->pointId = Random::character(18);
+    }
+
+    function pointId(?string $pointId = null)
+    {
+        if($pointId){
+            $this->pointId = $pointId;
+        }
+        return $this->pointId;
     }
 
     function end(string $status = self::END_SUCCESS,$arg = null)
