@@ -56,14 +56,14 @@ class PointContext
 
     public function next(string $name, ?int $cid = null):Point
     {
-        if($cid === null){
-            $cid = $this->cid();
-        }
         $current = $this->current($cid);
         /*
          * 自动创建
          */
         if($current){
+            if($cid === null){
+                $cid = $this->cid();
+            }
             $point = $current->next($name);
             $this->currentPointStack[$cid] = $point;
             return $point;
