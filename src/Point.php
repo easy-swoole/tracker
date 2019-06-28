@@ -109,11 +109,12 @@ class Point
     function end(string $status = self::END_SUCCESS,$arg = null)
     {
         if($this->endStatus != self::END_UNKNOWN){
-           return;
+           return false;
         }
         $this->endStatus = $status;
         $this->endArg = $arg;
         $this->endTime = round(microtime(true),4);
+        return true;
     }
 
     /**
@@ -124,12 +125,10 @@ class Point
         return $this->startTime;
     }
 
-    /**
-     * @param float $startTime
-     */
-    public function setStartTime(float $startTime): void
+    public function setStartTime(float $startTime):Point
     {
         $this->startTime = $startTime;
+        return $this;
     }
 
     /**
@@ -140,12 +139,10 @@ class Point
         return $this->startArg;
     }
 
-    /**
-     * @param mixed $startArg
-     */
-    public function setStartArg($startArg): void
+    public function setStartArg($startArg): Point
     {
         $this->startArg = $startArg;
+        return $this;
     }
 
     /**
@@ -156,12 +153,10 @@ class Point
         return $this->endTime;
     }
 
-    /**
-     * @param mixed $endTime
-     */
-    public function setEndTime($endTime): void
+    public function setEndTime($endTime):Point
     {
         $this->endTime = $endTime;
+        return $this;
     }
 
     /**
@@ -173,14 +168,6 @@ class Point
     }
 
     /**
-     * @param string $pointName
-     */
-    public function setPointName(string $pointName): void
-    {
-        $this->pointName = $pointName;
-    }
-
-    /**
      * @return string
      */
     public function getEndStatus(): string
@@ -188,13 +175,6 @@ class Point
         return $this->endStatus;
     }
 
-    /**
-     * @param string $endStatus
-     */
-    public function setEndStatus(string $endStatus): void
-    {
-        $this->endStatus = $endStatus;
-    }
 
     /**
      * @return mixed
@@ -204,12 +184,10 @@ class Point
         return $this->endArg;
     }
 
-    /**
-     * @param mixed $endArg
-     */
-    public function setEndArg($endArg): void
+    public function setEndArg($endArg):Point
     {
         $this->endArg = $endArg;
+        return $this;
     }
 
     public static function toString(Point $point,$depth = 0)

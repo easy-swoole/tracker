@@ -16,7 +16,7 @@ class PointContext
     protected $pointStack = [];
     protected $currentPointStack = [];
 
-    public function start(string $name, ?int $cid = null):Point
+    public function createStart(string $name, ?int $cid = null):Point
     {
         if($cid === null){
             $cid = $this->cid();
@@ -24,8 +24,10 @@ class PointContext
         if(!isset($this->pointStack[$cid])){
             $this->pointStack[$cid] = new Point($name);
             $this->currentPointStack[$cid] = $this->pointStack[$cid];
+            return $this->pointStack[$cid];
+        }else{
+            throw new Exception("start point has already created");
         }
-        return $this->pointStack[$cid];
     }
 
     public function current(?int $cid = null):?Point
@@ -37,6 +39,18 @@ class PointContext
             return $this->currentPointStack[$cid];
         }else{
            return null;
+        }
+    }
+
+    public function startPoint(?int $cid = null):?Point
+    {
+        if($cid === null){
+            $cid = $this->cid();
+        }
+        if(isset($this->pointStack[$cid])){
+            return $this->pointStack[$cid];
+        }else{
+            return null;
         }
     }
 
@@ -56,14 +70,24 @@ class PointContext
         }
     }
 
-    public function find(string $name,?int $cid = null)
+    public function find(string $name,?int $cid = null):?Point
     {
-
+        $start = $this->startPoint($cid);
+        if($start){
+            return $start->find($name);
+        }else{
+            throw new Exception("start point is null,please create start point");
+        }
     }
 
-    public function findChild(string $name)
+    public function findChild(string $name,?int $cid = null):?Point
     {
-
+        $start = $this->startPoint($cid);
+        if($start){
+            return $start->findChild($name);
+        }else{
+            throw new Exception("start point is null,please create start point");
+        }
     }
 
     public function appendChild(string $name, ?int $cid = null)
