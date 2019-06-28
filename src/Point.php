@@ -16,28 +16,20 @@ class Point
     protected $startArg;
     protected $endTime;
     protected $pointName;
-    protected $file;
-    protected $line;
     protected $endStatus = self::END_UNKNOWN;
     protected $endArg;
     protected $pointId;
     protected $subPoints = [];
     protected $nextPoint;
     protected $depth = 0;
+    protected $isNext = false;
 
-    function __construct(string $pointName = 'UNKNOWN',$depth = 0,$isNext = false)
+    function __construct(string $pointName,$depth = 0,$isNext = false)
     {
         $this->pointName = $pointName;
         $this->depth = $depth;
         $this->startTime = round(microtime(true),4);
-        $debugTrace = debug_backtrace();
-        if($isNext){
-            $caller = $debugTrace[$depth + 1];
-        }else{
-            $caller = $debugTrace[$depth];
-        }
-        $this->file = $caller['file'];
-        $this->line = $caller['line'];
+        $this->isNext = $isNext;
         $this->pointId = Random::character(18);
     }
 
@@ -47,7 +39,7 @@ class Point
         return $this->depth;
     }
 
-    function next(string $pointName = 'UNKNOWN'):Point
+    function next(string $pointName):Point
     {
         if(!isset($this->nextPoint)){
             $this->nextPoint = new Point($pointName,$this->depth,true);
@@ -55,34 +47,54 @@ class Point
         return $this->nextPoint;
     }
 
+    function isNext()
+    {
+        return $this->isNext;
+    }
+
     function hasNextPoint():?Point
     {
         return $this->nextPoint;
     }
 
-    function appendChild(string $pointName = 'UNKNOWN')
+    function appendChild(string $pointName)
     {
-        $point = new Point($pointName,$this->depth+1);
-        $this->subPoints[] = $point;
-        return $point;
+        $point = $this->findChild($pointName);
+        if($point){
+            return $point;
+        }else{
+            $point = new Point($pointName,$this->depth+1);
+            $this->subPoints[] = $point;
+            return $point;
+        }
     }
 
-    function appendChileInstance(Point $point)
-    {
-        $this->subPoints[] = $point;
-        return $this;
-    }
-
-    function findChild(string $pointId):?Point
+    function findChild(string $pointName):?Point
     {
         /** @var Point $point */
         foreach ($this->subPoints as $point){
-            if($point->pointId() === $pointId){
+            if($point->getPointName() == $pointName){
                 return $point;
             }
         }
         return null;
     }
+
+    function find(string $name):?Point
+    {
+        $temp = $this;
+        while (1){
+            if($temp->getPointName() == $name){
+                return $temp;
+            }elseif($temp->hasNextPoint()){
+                $temp = $temp->hasNextPoint();
+            }else{
+                break;
+            }
+        }
+        return null;
+    }
+
 
     function children()
     {
@@ -200,38 +212,6 @@ class Point
         $this->endArg = $endArg;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    /**
-     * @param mixed $file
-     */
-    public function setFile($file): void
-    {
-        $this->file = $file;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLine()
-    {
-        return $this->line;
-    }
-
-    /**
-     * @param mixed $line
-     */
-    public function setLine($line): void
-    {
-        $this->line = $line;
-    }
-
     public static function toString(Point $point,$depth = 0)
     {
         $string = '';
@@ -240,6 +220,7 @@ class Point
         $string .= str_repeat("\t",$depth)."Status:{$point->getEndStatus()}\n";
         $string .= str_repeat("\t",$depth)."PointId:{$point->pointId()}\n";
         $string .= str_repeat("\t",$depth)."Depth:{$point->depth()}\n";
+        $string .= str_repeat("\t",$depth)."IsNext:". ($point->isNext() ? 'true' : 'false') ."\n";
         $string .= str_repeat("\t",$depth)."Start:{$point->getStartTime()}\n";
         $string .= str_repeat("\t",$depth)."StartArg:".(self::argToString($point->getStartArg()))."\n";
         $string .= str_repeat("\t",$depth)."End:{$point->getEndTime()}\n";
