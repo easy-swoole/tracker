@@ -16,13 +16,14 @@ class Point
     protected $startArg;
     protected $endTime;
     protected $pointName;
-    protected $endStatus = self::END_UNKNOWN;
+    protected $status = self::END_UNKNOWN;
     protected $endArg;
     protected $pointId;
     protected $subPoints = [];
     protected $nextPoint;
     protected $depth = 0;
     protected $isNext = false;
+    protected $parentId = null;
 
     function __construct(string $pointName,$depth = 0,$isNext = false)
     {
@@ -30,9 +31,19 @@ class Point
         $this->depth = $depth;
         $this->startTime = round(microtime(true),4);
         $this->isNext = $isNext;
-        $this->pointId = Random::character(18);
+        $this->pointId = time().Random::character(8);
     }
 
+    function setParentId(string $id):Point
+    {
+        $this->parentId = $id;
+        return $this;
+    }
+
+    function parentId():?string
+    {
+        return $this->parentId;
+    }
 
     function depth():int
     {
@@ -43,6 +54,7 @@ class Point
     {
         if(!isset($this->nextPoint)){
             $this->nextPoint = new Point($pointName,$this->depth,true);
+            $this->nextPoint->setParentId($this->pointId);
         }
         return $this->nextPoint;
     }
@@ -64,6 +76,7 @@ class Point
             return $point;
         }else{
             $point = new Point($pointName,$this->depth+1);
+            $point->setParentId($this->pointId);
             $this->subPoints[] = $point;
             return $point;
         }
@@ -108,10 +121,10 @@ class Point
 
     function end(string $status = self::END_SUCCESS,$arg = null)
     {
-        if($this->endStatus != self::END_UNKNOWN){
+        if($this->status != self::END_UNKNOWN){
            return false;
         }
-        $this->endStatus = $status;
+        $this->status = $status;
         $this->endArg = $arg;
         $this->endTime = round(microtime(true),4);
         return true;
@@ -170,9 +183,9 @@ class Point
     /**
      * @return string
      */
-    public function getEndStatus(): string
+    public function getStatus(): string
     {
-        return $this->endStatus;
+        return $this->status;
     }
 
 
@@ -195,20 +208,21 @@ class Point
         $string = '';
         $string .= str_repeat("\t",$depth)."#\n";
         $string .= str_repeat("\t",$depth)."PointName:{$point->getPointName()}\n";
-        $string .= str_repeat("\t",$depth)."Status:{$point->getEndStatus()}\n";
+        $string .= str_repeat("\t",$depth)."Status:{$point->getStatus()}\n";
         $string .= str_repeat("\t",$depth)."PointId:{$point->pointId()}\n";
+        $string .= str_repeat("\t",$depth)."ParentId:{$point->parentId()}\n";
         $string .= str_repeat("\t",$depth)."Depth:{$point->depth()}\n";
         $string .= str_repeat("\t",$depth)."IsNext:". ($point->isNext() ? 'true' : 'false') ."\n";
         $string .= str_repeat("\t",$depth)."Start:{$point->getStartTime()}\n";
-        $string .= str_repeat("\t",$depth)."StartArg:".(self::argToString($point->getStartArg()))."\n";
+        $string .= str_repeat("\t",$depth)."StartArg:".(static::argToString($point->getStartArg()))."\n";
         $string .= str_repeat("\t",$depth)."End:{$point->getEndTime()}\n";
-        $string .= str_repeat("\t",$depth)."EndArg:".(self::argToString($point->getEndArg()))."\n";
+        $string .= str_repeat("\t",$depth)."EndArg:".(static::argToString($point->getEndArg()))."\n";
         $string .= str_repeat("\t",$depth)."ChildCount:".(count($point->children()))."\n";
         if(!empty($point->children())){
             $string .= str_repeat("\t",$depth)."Children:\n";
             $children = $point->children();
             foreach ($children as $child){
-                $string .= self::toString($child,$depth+1);
+                $string .= static::toString($child,$depth+1);
             }
         }else{
             $string .= str_repeat("\t",$depth)."Children:None\n";
@@ -216,17 +230,52 @@ class Point
 
         if($point->hasNextPoint()){
             $string .= str_repeat("\t",$depth)."NextPoint:\n";
-            $string .= self::toString($point->hasNextPoint());
+            $string .= static::toString($point->hasNextPoint());
         }else{
             $string .= str_repeat("\t",$depth)."NextPoint:None\n";
         }
         return $string;
     }
 
+    public static function toArray(Point $point):array
+    {
+        $ret = [];
+        $temp = [
+            'pointName'=>$point->getPointName(),
+            'pointId'=>$point->pointId(),
+            'parentId'=>$point->parentId(),
+            'startTime'=>$point->getStartTime(),
+            'endTime'=>$point->getEndTime(),
+            'startArg'=>$point->getStartArg(),
+            'endArg'=>$point->getEndArg(),
+            'status'=>$point->getStatus(),
+            'depth'=>$point->depth(),
+            'isNext'=>$point->isNext()
+        ];
+        $ret[] = $temp;
+        if(!empty($point->children())){
+            foreach ($point->children() as $child){
+                $temp = static::toArray($child);
+                foreach ($temp as $item){
+                    $ret[] = $item;
+                }
+            }
+        }
+        if($point->hasNextPoint()){
+            $temp = static::toArray($point->hasNextPoint());
+            foreach ($temp as $item){
+                $ret[] = $item;
+            }
+        }
+        return $ret;
+    }
+
     private static function argToString($arg)
     {
-        if($arg == null){
+        if($arg === null){
             return 'null';
+        }else if($arg === true || $arg === false){
+            return $arg ? 'true' : 'false';
         }else if(is_array($arg)){
             return json_encode($arg,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         }else{
