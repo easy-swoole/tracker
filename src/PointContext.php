@@ -56,13 +56,15 @@ class PointContext
 
     public function next(string $name, ?int $cid = null):Point
     {
+        if($cid === null){
+            $cid = $this->cid();
+        }
         $current = $this->current($cid);
         /*
          * 自动创建
          */
         if($current){
-            $point = $this->currentPointStack[$cid];
-            $point->next($name);
+            $point = $current->next($name);
             $this->currentPointStack[$cid] = $point;
             return $point;
         }else{
@@ -92,18 +94,14 @@ class PointContext
 
     public function appendChild(string $name, ?int $cid = null)
     {
-        if($cid === null){
-            $cid = $this->cid();
-        }
-        if(!isset($this->currentPointStack[$cid])){
+        $current = $this->current($cid);
+        if(!$current){
             /*
              * 需要先创建开头节点
              */
             throw new Exception("current point is empty");
         }else{
-            /** @var Point $point */
-            $point = $this->currentPointStack[$cid];
-            return $point->appendChild($name);
+            return $current->appendChild($name);
         }
     }
 
