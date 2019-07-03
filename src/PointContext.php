@@ -15,6 +15,21 @@ class PointContext
     protected $deferList = [];
     protected $pointStack = [];
     protected $currentPointStack = [];
+    /** @var AbstractPointSaveHandler */
+    protected $saveHandler;
+    protected $autoSave = false;
+
+    function setSaveHandler(AbstractPointSaveHandler $handler):PointContext
+    {
+        $this->saveHandler = $handler;
+        return $this;
+    }
+
+    function enableAutoSave():PointContext
+    {
+        $this->autoSave = true;
+        return $this;
+    }
 
     public function createStart(string $name, ?int $cid = null):Point
     {
@@ -111,6 +126,9 @@ class PointContext
         if(!isset($this->deferList[$cid]) && $cid > 0){
             $this->deferList[$cid] = true;
             defer(function ()use($cid){
+                if($this->autoSave && $this->saveHandler){
+                    $this->save();
+                }
                 unset($this->deferList[$cid]);
                 if(isset($this->currentPointStack[$cid])){
                     unset($this->currentPointStack[$cid]);
@@ -121,5 +139,19 @@ class PointContext
             });
         }
         return $cid;
+    }
+
+    function save(Point $point = null)
+    {
+        if($point == null){
+            $point = $this->current();
+        }
+        if($point && $this->saveHandler){
+            mt_srand();
+            if(mt_srand(0,100) < $this->saveHandler->probability()){
+                return $this->saveHandler->save($point);
+            }
+        }
+        return null;
     }
 }
