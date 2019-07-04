@@ -6,7 +6,7 @@ namespace EasySwoole\Tracker;
 
 abstract class AbstractPointSaveHandler
 {
-    abstract function save(Point $point):bool ;
+    abstract function save(Point $point,?array $globalArg = []):bool ;
     /*
      * 采样率，百分比
      */

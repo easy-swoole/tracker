@@ -18,9 +18,32 @@ class PointContext
     /** @var AbstractPointSaveHandler */
     protected $saveHandler;
     protected $autoSave = false;
+    protected $globalArg = [];
+
+    function setGlobalArg(array $data,?int $cid = null):PointContext
+    {
+        if($cid === null){
+            $cid = $this->cid();
+        }
+        $this->globalArg[$cid] = $data;
+        return $this;
+    }
+
+    function getGlobalArg(?int $cid = null):?array
+    {
+        if($cid === null){
+            $cid = $this->cid();
+        }
+        if(isset($this->globalArg[$cid])){
+            return $this->globalArg[$cid];
+        }else{
+            return null;
+        }
+    }
 
     function setSaveHandler(AbstractPointSaveHandler $handler):PointContext
     {
+
         $this->saveHandler = $handler;
         return $this;
     }
@@ -136,6 +159,9 @@ class PointContext
                 if(isset($this->pointStack[$cid])){
                     unset($this->pointStack[$cid]);
                 }
+                if(isset($this->globalArg[$cid])){
+                    unset($this->globalArg[$cid]);
+                }
             });
         }
         return $cid;
@@ -149,7 +175,7 @@ class PointContext
         if($point && $this->saveHandler){
             mt_srand();
             if(mt_srand(0,100) < $this->saveHandler->probability()){
-                return $this->saveHandler->save($point);
+                return $this->saveHandler->save($point,$this->getGlobalArg());
             }
         }
         return null;
