@@ -174,7 +174,7 @@ class PointContext
         }
         if($point && $this->saveHandler){
             mt_srand();
-            if(mt_srand(0,100) < $this->saveHandler->probability()){
+            if(mt_rand(0,100) < $this->saveHandler->probability()){
                 return $this->saveHandler->save($point,$this->getGlobalArg());
             }
         }
