@@ -122,7 +122,6 @@ class Point
         return null;
     }
 
-
     function children():array
     {
         return $this->subPoints;
@@ -157,9 +156,6 @@ class Point
         }
     }
 
-    /**
-     * @return float
-     */
     public function getStartTime(): float
     {
         return $this->startTime;
@@ -171,9 +167,6 @@ class Point
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getStartArg()
     {
         return $this->startArg;
@@ -185,9 +178,6 @@ class Point
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getEndTime()
     {
         return $this->endTime;
@@ -199,26 +189,16 @@ class Point
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getPointName(): string
     {
         return $this->pointName;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
-
-    /**
-     * @return mixed
-     */
     public function getEndArg()
     {
         return $this->endArg;
@@ -233,7 +213,7 @@ class Point
     public static function toString(Point $point,$depth = 0)
     {
         $string = '';
-        $string .= str_repeat("\t",$depth)."#\n";
+        $string .= str_repeat("\t",$depth)."##\n";
         $string .= str_repeat("\t",$depth)."PointName:{$point->getPointName()}\n";
         $status = self::statusToStr($point->getStatus());
         $string .= str_repeat("\t",$depth)."Status:{$status}\n";
