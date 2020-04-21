@@ -8,9 +8,9 @@ use EasySwoole\Utility\Random;
 
 class Point
 {
-    const END_SUCCESS = 'success';
-    const END_FAIL = 'fail';
-    const END_UNKNOWN = 'unknown';
+    const END_SUCCESS = 1;
+    const END_FAIL = -1;
+    const END_UNKNOWN = 0;
 
     protected $startTime;
     protected $startArg;
@@ -31,7 +31,7 @@ class Point
         $this->depth = $depth;
         $this->startTime = round(microtime(true),4);
         $this->isNext = $isNext;
-        $this->pointId = time().Random::character(8);
+        $this->pointId = Random::makeUUIDV4();
     }
 
     function setParentId(string $id):Point

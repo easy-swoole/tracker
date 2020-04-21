@@ -15,7 +15,7 @@ class PointContext
     protected $deferList = [];
     protected $pointStack = [];
     protected $currentPointStack = [];
-    /** @var AbstractPointSaveHandler */
+    /** @var SaveHandlerInterface */
     protected $saveHandler;
     protected $autoSave = false;
     protected $globalArg = [];
@@ -41,7 +41,7 @@ class PointContext
         }
     }
 
-    function setSaveHandler(AbstractPointSaveHandler $handler):PointContext
+    function setSaveHandler(SaveHandlerInterface $handler):PointContext
     {
 
         $this->saveHandler = $handler;
@@ -167,16 +167,13 @@ class PointContext
         return $cid;
     }
 
-    function save(Point $point = null)
+    function save(Point $point = null):?bool
     {
         if($point == null){
             $point = $this->current();
         }
         if($point && $this->saveHandler){
-            mt_srand();
-            if(mt_rand(0,100) < $this->saveHandler->probability()){
-                return $this->saveHandler->save($point,$this->getGlobalArg());
-            }
+            return $this->saveHandler->save($point,$this->getGlobalArg());
         }
         return null;
     }
