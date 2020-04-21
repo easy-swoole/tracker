@@ -8,18 +8,21 @@ use EasySwoole\Utility\Random;
 
 class Point
 {
-    const END_SUCCESS = 1;
     const END_FAIL = -1;
     const END_UNKNOWN = 0;
+    const END_SUCCESS = 1;
+    const END_BY_AUTO = 2;
 
     protected $startTime;
     protected $startArg;
+    protected $serviceName = 'default';
     protected $endTime;
     protected $pointName;
     protected $status = self::END_UNKNOWN;
     protected $endArg;
     protected $pointId;
     protected $subPoints = [];
+    /** @var Point */
     protected $nextPoint;
     protected $depth = 0;
     protected $isNext = false;
@@ -32,6 +35,17 @@ class Point
         $this->startTime = round(microtime(true),4);
         $this->isNext = $isNext;
         $this->pointId = Random::makeUUIDV4();
+    }
+
+    public function getServiceName(): string
+    {
+        return $this->serviceName;
+    }
+
+    public function setServiceName(string $serviceName): Point
+    {
+        $this->serviceName = $serviceName;
+        return $this;
     }
 
     function setParentId(string $id):Point
@@ -109,7 +123,7 @@ class Point
     }
 
 
-    function children()
+    function children():array
     {
         return $this->subPoints;
     }
@@ -128,6 +142,19 @@ class Point
         $this->endArg = $arg;
         $this->endTime = round(microtime(true),4);
         return true;
+    }
+
+    function endAll()
+    {
+        $this->end(static::END_BY_AUTO);
+        /** @var Point $child */
+        foreach ($this->children() as $child){
+            $child->end(static::END_BY_AUTO);
+            $child->endAll();
+        }
+        if($this->nextPoint){
+            $this->nextPoint->endAll();
+        }
     }
 
     /**
@@ -208,7 +235,8 @@ class Point
         $string = '';
         $string .= str_repeat("\t",$depth)."#\n";
         $string .= str_repeat("\t",$depth)."PointName:{$point->getPointName()}\n";
-        $string .= str_repeat("\t",$depth)."Status:{$point->getStatus()}\n";
+        $status = self::statusToStr($point->getStatus());
+        $string .= str_repeat("\t",$depth)."Status:{$status}\n";
         $string .= str_repeat("\t",$depth)."PointId:{$point->pointId()}\n";
         $string .= str_repeat("\t",$depth)."ParentId:{$point->parentId()}\n";
         $string .= str_repeat("\t",$depth)."Depth:{$point->depth()}\n";
@@ -280,6 +308,25 @@ class Point
             return json_encode($arg,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         }else{
             return (string)$arg;
+        }
+    }
+
+    public static function statusToStr(int $status)
+    {
+        switch ($status){
+            case self::END_SUCCESS:{
+                return 'success';
+            }
+            case self::END_FAIL:{
+                return 'fail';
+            }
+            case self::END_BY_AUTO:{
+                return 'auto-end';
+            }
+            default:
+            case self::END_UNKNOWN:{
+                return 'unknown';
+            }
         }
     }
 }
