@@ -138,7 +138,7 @@ class Point
            return false;
         }
         $this->status = $status;
-        $this->endArg = $arg;
+        $this->endArg = $arg ? $arg : $this->endArg;
         $this->endTime = round(microtime(true),4);
         return true;
     }
