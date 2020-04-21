@@ -143,19 +143,6 @@ class Point
         return true;
     }
 
-    function endAll()
-    {
-        $this->end(static::END_BY_AUTO);
-        /** @var Point $child */
-        foreach ($this->children() as $child){
-            $child->end(static::END_BY_AUTO);
-            $child->endAll();
-        }
-        if($this->nextPoint){
-            $this->nextPoint->endAll();
-        }
-    }
-
     public function getStartTime(): float
     {
         return $this->startTime;
@@ -215,6 +202,7 @@ class Point
         $string = '';
         $string .= str_repeat("\t",$depth)."##\n";
         $string .= str_repeat("\t",$depth)."PointName:{$point->getPointName()}\n";
+        $string .= str_repeat("\t",$depth)."ServiceName:{$point->getServiceName()}\n";
         $status = self::statusToStr($point->getStatus());
         $string .= str_repeat("\t",$depth)."Status:{$status}\n";
         $string .= str_repeat("\t",$depth)."PointId:{$point->pointId()}\n";
@@ -307,6 +295,19 @@ class Point
             case self::END_UNKNOWN:{
                 return 'unknown';
             }
+        }
+    }
+
+    public function recursive(callable $call)
+    {
+        call_user_func($call,$this);
+        $this->end(static::END_BY_AUTO);
+        /** @var Point $child */
+        foreach ($this->children() as $child){
+            $child->recursive($call);
+        }
+        if($this->nextPoint){
+            $this->nextPoint->recursive($call);
         }
     }
 }

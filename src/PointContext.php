@@ -172,8 +172,13 @@ class PointContext
         if($point == null){
             $point = $this->current();
         }
-        if($point && $this->saveHandler){
-            return $this->saveHandler->save($point,$this->getGlobalArg());
+        if($point){
+            $point->recursive(function (Point $point){
+                $point->end(Point::END_BY_AUTO);
+            });
+            if($this->saveHandler){
+                return $this->saveHandler->save($point,$this->getGlobalArg());
+            }
         }
         return null;
     }
