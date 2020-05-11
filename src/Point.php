@@ -226,7 +226,7 @@ class Point
 
         if($point->hasNextPoint()){
             $string .= str_repeat("\t",$depth)."NextPoint:\n";
-            $string .= static::toString($point->hasNextPoint());
+            $string .= static::toString($point->hasNextPoint(),$depth+1);
         }else{
             $string .= str_repeat("\t",$depth)."NextPoint:None\n";
         }
