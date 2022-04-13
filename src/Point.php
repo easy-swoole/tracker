@@ -132,7 +132,7 @@ class Point
         return $this->pointId;
     }
 
-    function end(string $status = self::END_SUCCESS,$arg = null)
+    function end(int $status = self::END_SUCCESS,$arg = null)
     {
         if($this->status != self::END_UNKNOWN){
            return false;
